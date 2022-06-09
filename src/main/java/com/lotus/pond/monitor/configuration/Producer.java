@@ -30,8 +30,9 @@ public class Producer {
 
         Flux<String> quotes = Flux.fromStream(Stream.generate(() -> faker.weather().temperatureCelsius()));
         Flux.zip(interval, quotes).map(it -> {
-                    System.out.println("ZIP RUNNING WITH T1:" + it.getT1() + " T2:" + it.getT2() );
-                    return template.send("pond", faker.random().nextInt(42), it.getT2());
+                    logger.info("ZIP RUNNING WITH T1:[{}]", it.getT2());
+                    template.send("pond", 3, "apasih");
+                    return template.send("pond", 1, it.getT2());
                 }
         ).blockLast();
     }
