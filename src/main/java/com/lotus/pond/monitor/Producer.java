@@ -1,4 +1,4 @@
-package com.lotus.pond.monitor.configuration;
+package com.lotus.pond.monitor;
 
 import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
