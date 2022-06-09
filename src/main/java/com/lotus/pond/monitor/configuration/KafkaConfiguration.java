@@ -1,6 +1,9 @@
 package com.lotus.pond.monitor.configuration;
 
-import com.fasterxml.jackson.databind.ser.std.StringSerializer;
+import org.apache.kafka.common.serialization.IntegerSerializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -15,19 +18,22 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 @Configuration
 public class KafkaConfiguration {
 
+    Logger logger = LoggerFactory.getLogger(KafkaConfiguration.class);
+
     @Bean
-    public ProducerFactory<String,String> producerFactory(){
-        return new DefaultKafkaProducerFactory<>(
-                Map.of(BOOTSTRAP_SERVERS_CONFIG,"localhost:9092",
-                        RETRIES_CONFIG,0,
-                        BUFFER_MEMORY_CONFIG,33554432,
-                        KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
-                        VALUE_SERIALIZER_CLASS_CONFIG,StringSerializer.class
-                ));
+    public KafkaTemplate<Integer,String> KafkaTemplate(){
+        return new KafkaTemplate<>(ProducerFactory());
     }
 
     @Bean
-    public KafkaTemplate<String,String> kafkaTemplate(){
-        return new KafkaTemplate<>(producerFactory());
+    public ProducerFactory<Integer,String> ProducerFactory(){
+        logger.info("PRODUCER FACTORY CREATION");
+        return new DefaultKafkaProducerFactory<>(
+                Map.of(BOOTSTRAP_SERVERS_CONFIG,"pkc-6ojv2.us-west4.gcp.confluent.cloud:9092",
+                        RETRIES_CONFIG,0,
+                        BUFFER_MEMORY_CONFIG,33554432,
+                        KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class,
+                        VALUE_SERIALIZER_CLASS_CONFIG,StringSerializer.class
+                ));
     }
 }
