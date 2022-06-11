@@ -35,7 +35,7 @@ public class KafkaTopicConfig {
     @Value(value = "${sasl.mechanism}")
     private String saslMechanism;
 
-    @Value(value = "${spring.kafka.producer.client-id}")
+    @Value(value = "${producer.client-id}")
     private String clientId;
 
     @Bean
@@ -60,7 +60,7 @@ public class KafkaTopicConfig {
     Map<String, Object> configs() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
         configs.put("sasl.mechanism", saslMechanism);

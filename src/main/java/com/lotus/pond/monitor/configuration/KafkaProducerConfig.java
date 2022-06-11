@@ -33,11 +33,11 @@ public class KafkaProducerConfig {
     @Value(value = "${sasl.mechanism}")
     private String saslMechanism;
 
-    @Value(value = "${spring.kafka.producer.client-id}")
+    @Value(value = "${producer.client-id}")
     private String clientId;
 
     @Bean
-    public ProducerFactory<Integer, String> producerFactory() {
+    public ProducerFactory<String, String> producerFactory() {
         logger.info("producerFactory");
         Map<String, Object> configProps = configs();
         return new DefaultKafkaProducerFactory<>(configProps);
@@ -46,7 +46,7 @@ public class KafkaProducerConfig {
     Map<String, Object> configs() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
         configs.put("sasl.mechanism", saslMechanism);
@@ -56,7 +56,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<Integer, String> kafkaTemplate() {
+    public KafkaTemplate<String, String> kafkaTemplate() {
         logger.info("kafkaTemplate");
         return new KafkaTemplate<>(producerFactory());
     }
