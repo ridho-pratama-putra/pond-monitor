@@ -2,13 +2,10 @@ package com.lotus.pond.monitor;
 
 import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -24,14 +21,6 @@ public class Producer {
     private final KafkaTemplate<Integer, String> template;
 
     Faker faker;
-
-    @Bean
-    NewTopic programmaticallyCreateTopic() {
-        return TopicBuilder.name("programmatically.topic")
-                .partitions(4)
-                .replicas(3)
-                .build();
-    }
 
     @EventListener(ApplicationStartedEvent.class)
     public void sendMessage() {
