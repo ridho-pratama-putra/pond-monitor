@@ -4,6 +4,8 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,16 +19,18 @@ import java.util.Map;
 @Configuration
 public class KafkaProducerConfig {
 
-    @Value(value = "${spring.kafka.properties.bootstrap.servers}")
+    Logger logger = LoggerFactory.getLogger(KafkaProducerConfig.class);
+
+    @Value(value = "${bootstrap.servers}")
     private String bootstrapAddress;
 
-    @Value(value = "${spring.kafka.properties.sasl.jaas.config}")
+    @Value(value = "${sasl.jaas.config}")
     private String saslJaasConfig;
 
-    @Value(value = "${spring.kafka.properties.security.protocol}")
+    @Value(value = "${security.protocol}")
     private String securityProtocol;
 
-    @Value(value = "${spring.kafka.properties.sasl.mechanism}")
+    @Value(value = "${sasl.mechanism}")
     private String saslMechanism;
 
     @Value(value = "${spring.kafka.producer.client-id}")
@@ -34,6 +38,7 @@ public class KafkaProducerConfig {
 
     @Bean
     public ProducerFactory<Integer, String> producerFactory() {
+        logger.info("producerFactory");
         Map<String, Object> configProps = configs();
         return new DefaultKafkaProducerFactory<>(configProps);
     }
@@ -52,6 +57,7 @@ public class KafkaProducerConfig {
 
     @Bean
     public KafkaTemplate<Integer, String> kafkaTemplate() {
+        logger.info("kafkaTemplate");
         return new KafkaTemplate<>(producerFactory());
     }
 }

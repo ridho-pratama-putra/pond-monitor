@@ -1,7 +1,8 @@
 package com.lotus.pond.monitor.configuration;
 
-import org.apache.kafka.clients.admin.Admin;
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.TopicBuilder;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,47 +23,39 @@ public class KafkaTopicConfig {
 
     Logger logger = LoggerFactory.getLogger(KafkaTopicConfig.class);
 
-    @Value(value = "${spring.kafka.properties.bootstrap.servers}")
+    @Value(value = "${bootstrap.servers}")
     private String bootstrapAddress;
 
-    @Value(value = "${spring.kafka.properties.sasl.jaas.config}")
+    @Value(value = "${sasl.jaas.config}")
     private String saslJaasConfig;
 
-    @Value(value = "${spring.kafka.properties.security.protocol}")
+    @Value(value = "${security.protocol}")
     private String securityProtocol;
 
-    @Value(value = "${spring.kafka.properties.sasl.mechanism}")
+    @Value(value = "${sasl.mechanism}")
     private String saslMechanism;
 
     @Value(value = "${spring.kafka.producer.client-id}")
     private String clientId;
 
-//    /*
-//    * ENABLE this will allow Topic Builder to create new topic, but this wont contribute for deletion
-//    */
-//    @Bean
-//    public KafkaAdmin kafkaAdmin() {
-//        logger.info("setup kafka admin");
-//        Map<String, Object> configs = configs();
-//        return new KafkaAdmin(configs);
-//    }
-//
-//    @Bean
-//    NewTopic programmaticallyCreateTopic() {
-//        logger.info("programmaticallyCreateTopic");
-//        return TopicBuilder.name("programmatically.topic")
-//                .partitions(4)
-//                .replicas(3)
-//                .build();
-//    }
+    @Bean
+    void programmaticallyCreateTopic() {
+        logger.info("programmaticallyCreateTopic");
+        AdminClient adminClient = KafkaAdminClient.create(configs());
+        adminClient.createTopics(Collections.singleton(TopicBuilder.name("programmatically.topic")
+                .partitions(4)
+                .replicas(3)
+                .build()));
+
+    }
 
     /* delete not existing topics wont stopping application*/
-    @Bean
-    public void deleteTopic() {
-        logger.info("deleteTopic");
-        Admin admin = Admin.create(configs());
-        admin.deleteTopics(Collections.singletonList("programmatically.topic"));
-    }
+//    @Bean
+//    public void deleteTopic() {
+//        logger.info("deleteTopic");
+//        AdminClient adminClient = KafkaAdminClient.create(configs());
+//        adminClient.deleteTopics(Collections.singletonList("programmatically.topic"))
+//    }
 
     Map<String, Object> configs() {
         Map<String, Object> configs = new HashMap<>();
